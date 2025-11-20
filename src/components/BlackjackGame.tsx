@@ -2,9 +2,14 @@ import React, { useState } from 'react';
 import { PlayingCard } from './PlayingCard';
 import { useGame } from '../contexts/GameContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { PlayerAction, recordStrategyDecision, StrategyFeedback } from '../utils/strategy';
 import { RefreshCw } from 'lucide-react';
 
-export const BlackjackGame: React.FC = () => {
+interface BlackjackGameProps {
+  onDecisionFeedback?: (feedback: StrategyFeedback | null) => void;
+}
+
+export const BlackjackGame: React.FC<BlackjackGameProps> = ({ onDecisionFeedback }) => {
   const { gameState, dispatch } = useGame();
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();
@@ -20,17 +25,17 @@ export const BlackjackGame: React.FC = () => {
     dispatch({ type: 'DEAL_CARDS' });
   };
 
-  const handleHit = () => {
-    dispatch({ type: 'HIT' });
+  const handleDecision = (action: PlayerAction, dispatchAction: Parameters<typeof dispatch>[0]) => {
+    const feedback = recordStrategyDecision(gameState, action);
+    onDecisionFeedback?.(feedback);
+    dispatch(dispatchAction);
   };
 
-  const handleStand = () => {
-    dispatch({ type: 'STAND' });
-  };
+  const handleHit = () => handleDecision('HIT', { type: 'HIT' });
 
-  const handleDouble = () => {
-    dispatch({ type: 'DOUBLE' });
-  };
+  const handleStand = () => handleDecision('STAND', { type: 'STAND' });
+
+  const handleDouble = () => handleDecision('DOUBLE', { type: 'DOUBLE' });
 
   const currentPlayerHand = gameState.playerHands[gameState.currentHandIndex];
   const showDealerSecondCard = gameState.gamePhase === 'dealer' || gameState.gamePhase === 'finished';

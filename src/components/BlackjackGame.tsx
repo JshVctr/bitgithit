@@ -5,7 +5,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { recordStrategyDecision } from '../utils/strategy';
 import { RefreshCw } from 'lucide-react';
 
-export const BlackjackGame: React.FC = () => {
+interface BlackjackGameProps {
+  onDecisionFeedback?: (feedback: StrategyFeedback | null) => void;
+}
+
+export const BlackjackGame: React.FC<BlackjackGameProps> = ({ onDecisionFeedback }) => {
   const { gameState, dispatch } = useGame();
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();

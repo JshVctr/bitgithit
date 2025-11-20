@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { generateQuizQuestion, QuizQuestion } from '../utils/quizGenerator';
 
 export const Quiz: React.FC = () => {
-  const { updateQuizStats } = useUser();
+  const { user, updateQuizStats } = useUser();
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();
 
@@ -18,18 +18,6 @@ export const Quiz: React.FC = () => {
   const [answered, setAnswered] = useState(0);
   const [streak, setStreak] = useState(0);
   const [timeLeft, setTimeLeft] = useState(30);
-
-  const loadNewQuestion = (
-    type: QuizQuestion['category'] = quizType,
-    level: QuizQuestion['difficulty'] = difficulty
-  ) => {
-    const question = generateQuizQuestion(type, level);
-    setCurrentQuestion(question);
-    setSelectedAnswer('');
-    setShowResult(false);
-    setTimeLeft(level === 'easy' ? 45 : level === 'medium' ? 30 : 15);
-    setIsTimerActive(true);
-  };
 
   const loadNewQuestion = (
     type: QuizQuestion['category'] = quizType,
@@ -65,10 +53,6 @@ export const Quiz: React.FC = () => {
     loadNewQuestion(quizType, difficulty);
   }, [difficulty]);
 
-  useEffect(() => {
-    loadNewQuestion(quizType, difficulty);
-  }, [difficulty]);
-
     if (!showResult) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
@@ -82,8 +66,12 @@ export const Quiz: React.FC = () => {
     loadNewQuestion(newType, difficulty);
   };
 
-  const statCategory = (category: QuizQuestion['category']): 'basicStrategy' | 'cardCounting' =>
-    category === 'basic-strategy' ? 'basicStrategy' : 'cardCounting';
+  const handleQuizTypeChange = (newType: QuizQuestion['category']) => {
+    if (newType === quizType) return;
+
+    setQuizType(newType);
+    loadNewQuestion(newType, difficulty);
+  };
 
   const handleAnswerSubmit = () => {
     if (!currentQuestion || !selectedAnswer) return;
@@ -97,9 +85,10 @@ export const Quiz: React.FC = () => {
     } else {
       setStreak(0);
     }
-    
-    setQuestionsAnswered(questionsAnswered + 1);
-    updateQuizStats(statCategory(quizType), isCorrect);
+
+    setAnswered(answered + 1);
+    const statsType = quizType === 'basic-strategy' ? 'basicStrategy' : 'cardCounting';
+    updateQuizStats(statsType as any, isCorrect);
   };
 
   const handleNext = () => {

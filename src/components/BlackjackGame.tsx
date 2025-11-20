@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PlayingCard } from './PlayingCard';
 import { useGame } from '../contexts/GameContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { recordStrategyDecision } from '../utils/strategy';
 import { RefreshCw } from 'lucide-react';
 
 export const BlackjackGame: React.FC = () => {
@@ -21,14 +22,17 @@ export const BlackjackGame: React.FC = () => {
   };
 
   const handleHit = () => {
+    recordStrategyDecision(gameState, 'HIT');
     dispatch({ type: 'HIT' });
   };
 
   const handleStand = () => {
+    recordStrategyDecision(gameState, 'STAND');
     dispatch({ type: 'STAND' });
   };
 
   const handleDouble = () => {
+    recordStrategyDecision(gameState, 'DOUBLE');
     dispatch({ type: 'DOUBLE' });
   };
 

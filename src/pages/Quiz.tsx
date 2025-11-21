@@ -37,22 +37,15 @@ export const Quiz: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const state = { score, questionsAnswered, streak, bestStreak };
-    localStorage.setItem('ratio-quiz-state', JSON.stringify(state));
-  }, [score, questionsAnswered, streak, bestStreak]);
+    if (showResult) return;
 
-  useEffect(() => {
-    loadNewQuestion();
-  }, []);
-
-  useEffect(() => {
-    loadNewQuestion(quizType, difficulty);
-  }, [difficulty]);
-
-    if (!showResult) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
+    if (timeLeft === 0) {
+      handleSubmit();
+      return;
     }
+
+    const timer = setTimeout(() => setTimeLeft((prev) => prev - 1), 1000);
+    return () => clearTimeout(timer);
   }, [timeLeft, showResult]);
 
   const handleQuizTypeChange = (newType: QuizQuestion['category']) => {

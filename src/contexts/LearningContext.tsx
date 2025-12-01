@@ -30,7 +30,7 @@ const defaultModules: LearningModule[] = [
   // Basics Category
   {
     id: 'basics-intro',
-    title: 'Welcome to Blackjack',
+    title: 'Welcome to 21',
     description: 'Learn the fundamental rules and objectives',
     type: 'lesson',
     difficulty: 'beginner',

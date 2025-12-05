@@ -48,7 +48,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'beginner',
     prerequisites: ['basics-intro'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 75,
     category: 'basics'
   },
@@ -60,7 +60,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'beginner',
     prerequisites: ['card-values'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 100,
     category: 'basics'
   },
@@ -72,7 +72,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'beginner',
     prerequisites: ['basic-rules-quiz'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 75,
     category: 'basics'
   },
@@ -86,7 +86,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'intermediate',
     prerequisites: ['dealer-rules'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 100,
     category: 'strategy'
   },
@@ -98,7 +98,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'intermediate',
     prerequisites: ['basic-strategy-intro'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 125,
     category: 'strategy'
   },
@@ -110,7 +110,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'intermediate',
     prerequisites: ['hard-hands'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 150,
     category: 'strategy'
   },
@@ -122,7 +122,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'intermediate',
     prerequisites: ['hard-hands-quiz'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 125,
     category: 'strategy'
   },
@@ -134,7 +134,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'intermediate',
     prerequisites: ['soft-hands'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 125,
     category: 'strategy'
   },
@@ -146,7 +146,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'intermediate',
     prerequisites: ['pairs'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 200,
     category: 'strategy'
   },
@@ -160,7 +160,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['strategy-practice'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 150,
     category: 'counting'
   },
@@ -172,7 +172,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['counting-intro'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 175,
     category: 'counting'
   },
@@ -184,7 +184,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['hi-lo-system'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 200,
     category: 'counting'
   },
@@ -196,7 +196,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['running-count'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 175,
     category: 'counting'
   },
@@ -208,7 +208,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['true-count'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 250,
     category: 'counting'
   },
@@ -222,7 +222,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['counting-quiz'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 200,
     category: 'advanced'
   },
@@ -234,7 +234,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['deviations'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 150,
     category: 'advanced'
   },
@@ -246,7 +246,7 @@ const defaultModules: LearningModule[] = [
     difficulty: 'advanced',
     prerequisites: ['bankroll-management'],
     completed: false,
-    unlocked: false,
+    unlocked: true,
     xpReward: 500,
     category: 'advanced'
   }

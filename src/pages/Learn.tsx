@@ -115,7 +115,6 @@ export const Learn: React.FC = () => {
                           ? `border-green-500 ${themeClasses.surface} bg-green-500/10`
                           : `border-transparent ${themeClasses.surface} hover:border-green-300`
                       }`}
-                      disabled={!module.unlocked}
                     >
                       <div className="flex items-center gap-3 text-left">
                         {module.completed ? (

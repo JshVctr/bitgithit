@@ -55,7 +55,7 @@ const defaultModules: LearningModule[] = [
   {
     id: 'basic-rules-quiz',
     title: 'Basic Rules Quiz',
-    description: 'Test your knowledge of basic blackjack rules',
+    description: 'Test your knowledge of basic 21 rules',
     type: 'quiz',
     difficulty: 'beginner',
     prerequisites: ['card-values'],

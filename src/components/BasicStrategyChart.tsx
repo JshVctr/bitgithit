@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Target, Info } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 export const BasicStrategyChart: React.FC = () => {
   const [selectedCell, setSelectedCell] = useState<string | null>(null);
+  const { getThemeClasses } = useTheme();
+  const themeClasses = getThemeClasses();
 
   // Basic strategy chart data
   const hardTotals = [
@@ -69,7 +72,7 @@ export const BasicStrategyChart: React.FC = () => {
 
   const renderChart = (title: string, data: string[][]) => (
     <div className="mb-8">
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>
+      <h3 className={`text-xl font-semibold ${themeClasses.text} mb-4`}>{title}</h3>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <tbody>
@@ -78,13 +81,13 @@ export const BasicStrategyChart: React.FC = () => {
                 {row.map((cell, cellIndex) => {
                   const isHeader = rowIndex === 0 || cellIndex === 0;
                   const cellKey = `${title}-${rowIndex}-${cellIndex}`;
-                  
+
                   return (
                     <td
                       key={cellIndex}
                       className={`p-2 text-center font-medium border ${
-                        isHeader 
-                          ? 'bg-gray-200 text-gray-800 border-gray-300' 
+                        isHeader
+                          ? `${themeClasses.surface} ${themeClasses.text} ${themeClasses.border}`
                           : `${getCellColor(cell)} hover:opacity-80 cursor-pointer`
                       }`}
                       onClick={() => !isHeader && setSelectedCell(cellKey)}
@@ -102,19 +105,19 @@ export const BasicStrategyChart: React.FC = () => {
   );
 
   return (
-    <div className="prose prose-invert max-w-none">
+    <div className="max-w-none">
       <div className="flex items-center mb-6">
         <Target className="h-6 w-6 text-green-500 mr-2" />
-        <h2 className="text-3xl font-bold text-gray-800">Basic Strategy Charts</h2>
+        <h2 className={`text-3xl font-bold ${themeClasses.text}`}>Basic Strategy Charts</h2>
       </div>
-      
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8">
+
+      <div className={`${themeClasses.surface} border ${themeClasses.border} rounded-lg p-4 mb-8`}>
         <div className="flex items-center space-x-2 mb-2">
-          <Info className="h-5 w-5 text-blue-400" />
-          <span className="text-blue-700 font-medium">How to Use</span>
+          <Info className="h-5 w-5 text-green-500" />
+          <span className={`${themeClasses.text} font-medium`}>How to Use</span>
         </div>
-        <p className="text-blue-600 text-sm">
-          Find your hand total in the left column, then follow that row to the dealer's upcard column. 
+        <p className={`${themeClasses.textSecondary} text-sm`}>
+          Find your hand total in the left column, then follow that row to the dealer's upcard column.
           The intersection shows the mathematically optimal play.
         </p>
       </div>
@@ -125,28 +128,28 @@ export const BasicStrategyChart: React.FC = () => {
         {renderChart('Pairs', pairs)}
       </div>
 
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mt-8">
-        <h3 className="text-xl font-semibold text-gray-800 mb-4">Legend</h3>
+      <div className={`${themeClasses.surface} border ${themeClasses.border} rounded-lg p-6 mt-8`}>
+        <h3 className={`text-xl font-semibold ${themeClasses.text} mb-4`}>Legend</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-red-200 border border-red-300 rounded"></div>
-            <span className="text-gray-700">Hit</span>
+            <span className={themeClasses.text}>Hit</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-blue-200 border border-blue-300 rounded"></div>
-            <span className="text-gray-700">Stand</span>
+            <span className={themeClasses.text}>Stand</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-yellow-200 border border-yellow-300 rounded"></div>
-            <span className="text-gray-700">Double Down</span>
+            <span className={themeClasses.text}>Double Down</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-green-200 border border-green-300 rounded"></div>
-            <span className="text-gray-700">Split</span>
+            <span className={themeClasses.text}>Split</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-4 h-4 bg-purple-200 border border-purple-300 rounded"></div>
-            <span className="text-gray-700">Surrender</span>
+            <span className={themeClasses.text}>Surrender</span>
           </div>
         </div>
       </div>

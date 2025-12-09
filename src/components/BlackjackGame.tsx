@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { PlayingCard } from './PlayingCard';
 import { useGame } from '../contexts/GameContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { PlayerAction, recordStrategyDecision, StrategyFeedback } from '../utils/strategy';
 import { RefreshCw } from 'lucide-react';
+import { useUser } from '../contexts/UserContext';
 
 interface BlackjackGameProps {
   onDecisionFeedback?: (feedback: StrategyFeedback | null) => void;
@@ -13,7 +14,9 @@ export const BlackjackGame: React.FC<BlackjackGameProps> = ({ onDecisionFeedback
   const { gameState, dispatch } = useGame();
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();
+  const { addExperience, user } = useUser();
   const [showResults, setShowResults] = useState(false);
+  const lastRoundSignature = useRef<string>('');
 
   const handleNewGame = () => {
     dispatch({ type: 'NEW_GAME' });
@@ -29,6 +32,10 @@ export const BlackjackGame: React.FC<BlackjackGameProps> = ({ onDecisionFeedback
     const feedback = recordStrategyDecision(gameState, action);
     onDecisionFeedback?.(feedback);
     dispatch(dispatchAction);
+    if (action !== 'DEAL') {
+      const base = feedback?.isOptimal ? 12 : 6;
+      addExperience(base, feedback?.isOptimal ? 'Optimal play' : 'Practice action');
+    }
   };
 
   const handleHit = () => handleDecision('HIT', { type: 'HIT' });
@@ -38,6 +45,19 @@ export const BlackjackGame: React.FC<BlackjackGameProps> = ({ onDecisionFeedback
   const handleDouble = () => handleDecision('DOUBLE', { type: 'DOUBLE' });
 
   const handleSplit = () => handleDecision('SPLIT', { type: 'SPLIT' });
+
+  useEffect(() => {
+    if (gameState.gamePhase !== 'finished' || gameState.handResults.length === 0) return;
+    const signature = `${gameState.handResults.join('-')}-${gameState.dealerHand.cards.length}-${gameState.playerHands.length}`;
+    if (signature === lastRoundSignature.current) return;
+    lastRoundSignature.current = signature;
+
+    const wins = gameState.handResults.filter(result => result === 'win').length;
+    const pushes = gameState.handResults.filter(result => result === 'push').length;
+    const accuracyBonus = Math.round((user.stats.strategyAccuracy || 0) * 10);
+    const totalXp = wins * 15 + pushes * 5 + 10 + accuracyBonus;
+    addExperience(totalXp, 'Round complete');
+  }, [addExperience, gameState.dealerHand.cards.length, gameState.gamePhase, gameState.handResults, gameState.playerHands.length, user.stats.strategyAccuracy]);
 
   const currentPlayerHand = gameState.playerHands[gameState.currentHandIndex];
   const hasSplitHands = gameState.playerHands.length > 1;

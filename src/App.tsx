@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navigation } from './components/Navigation';
+import { Login } from './components/Login';
 import { Home } from './pages/Home';
 import { Profile } from './pages/Profile';
 import { Stats } from './pages/Stats';
@@ -7,15 +8,24 @@ import { Learn } from './pages/Learn';
 import { Quiz } from './pages/Quiz';
 import { Play } from './pages/Play';
 import { GameProvider } from './contexts/GameContext';
-import { UserProvider } from './contexts/UserContext';
+import { UserProvider, useUser } from './contexts/UserContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { LearningProvider } from './contexts/LearningContext';
 import { XpToastStack } from './components/XpToastStack';
 
 export type Page = 'home' | 'profile' | 'stats' | 'learn' | 'quiz' | 'play';
 
-function App() {
+function AppContent() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
+  const { userId, isLoading: authLoading } = useAuth();
+  const { loadUserData } = useUser();
+
+  useEffect(() => {
+    if (userId) {
+      loadUserData(userId);
+    }
+  }, [userId, loadUserData]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -36,21 +46,41 @@ function App() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!userId) {
+    return <Login />;
+  }
+
+  return (
+    <div className="min-h-screen">
+      <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
+      <XpToastStack />
+      <main className="pt-16">
+        {renderPage()}
+      </main>
+    </div>
+  );
+}
+
+function App() {
   return (
     <ThemeProvider>
-      <UserProvider>
-        <GameProvider>
-          <LearningProvider>
-            <div className="min-h-screen">
-              <Navigation currentPage={currentPage} onNavigate={setCurrentPage} />
-              <XpToastStack />
-              <main className="pt-16">
-                {renderPage()}
-              </main>
-            </div>
-          </LearningProvider>
-        </GameProvider>
-      </UserProvider>
+      <AuthProvider>
+        <UserProvider>
+          <GameProvider>
+            <LearningProvider>
+              <AppContent />
+            </LearningProvider>
+          </GameProvider>
+        </UserProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }

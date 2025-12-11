@@ -1,29 +1,94 @@
-import React, { useState } from 'react';
-import { User, Settings, Save, Trophy } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Settings, Save, Trophy, LogOut } from 'lucide-react';
 import { useUser } from '../contexts/UserContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { LevelBadge } from '../components/LevelBadge';
 
 export const Profile: React.FC = () => {
-  const { user, updateProfile } = useUser();
+  const { user, updateProfile, savePreferences } = useUser();
+  const { logout } = useAuth();
   const { getThemeClasses } = useTheme();
   const themeClasses = getThemeClasses();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: user.name,
     email: user.email,
     preferences: { ...user.preferences }
   });
 
-  const handleSave = () => {
-    updateProfile(formData);
-    setIsEditing(false);
+  useEffect(() => {
+    setFormData({
+      name: user.name,
+      email: user.email,
+      preferences: { ...user.preferences }
+    });
+  }, [user]);
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setSaveSuccess(false);
+
+    try {
+      await updateProfile({
+        name: formData.name,
+        email: formData.email,
+      });
+
+      setIsEditing(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePreferenceChange = async (
+    key: keyof typeof formData.preferences,
+    value: any
+  ) => {
+    const newPreferences = {
+      ...formData.preferences,
+      [key]: value,
+    };
+
+    setFormData(prev => ({
+      ...prev,
+      preferences: newPreferences,
+    }));
+
+    await savePreferences(newPreferences);
+  };
+
+  const handleLogout = () => {
+    if (confirm('Are you sure you want to log out?')) {
+      logout();
+    }
   };
 
   return (
     <div className={`${themeClasses.bg} min-h-screen`}>
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <h1 className={`text-3xl font-bold mb-8 ${themeClasses.text}`}>Profile</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className={`text-3xl font-bold ${themeClasses.text}`}>Profile</h1>
+          <button
+            onClick={handleLogout}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${themeClasses.surface} ${themeClasses.text} hover:bg-red-500 hover:text-white transition-all`}
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Logout</span>
+          </button>
+        </div>
+
+        {saveSuccess && (
+          <div className="mb-6 p-4 bg-green-500/20 border border-green-500 rounded-lg">
+            <p className="text-green-700 dark:text-green-300 font-medium">Profile saved successfully!</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Profile Card */}
@@ -57,12 +122,28 @@ export const Profile: React.FC = () => {
                   <Settings className="h-5 w-5 mr-2" />
                   Account Settings
                 </h3>
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="text-green-500 hover:text-green-400 transition-colors"
-                >
-                  {isEditing ? 'Cancel' : 'Edit'}
-                </button>
+                {!isEditing ? (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="text-green-500 hover:text-green-400 transition-colors font-medium"
+                  >
+                    Edit
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsEditing(false);
+                      setFormData({
+                        name: user.name,
+                        email: user.email,
+                        preferences: { ...user.preferences }
+                      });
+                    }}
+                    className="text-red-500 hover:text-red-400 transition-colors font-medium"
+                  >
+                    Cancel
+                  </button>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -97,10 +178,11 @@ export const Profile: React.FC = () => {
                 {isEditing && (
                   <button
                     onClick={handleSave}
-                    className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all"
+                    disabled={isSaving}
+                    className={`flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <Save className="h-4 w-4" />
-                    <span>Save Changes</span>
+                    <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
                   </button>
                 )}
               </div>
@@ -121,10 +203,7 @@ export const Profile: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={formData.preferences.showStrategyHints}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      preferences: { ...formData.preferences, showStrategyHints: e.target.checked }
-                    })}
+                    onChange={(e) => handlePreferenceChange('showStrategyHints', e.target.checked)}
                     className="w-5 h-5 text-green-600"
                   />
                 </div>
@@ -137,10 +216,7 @@ export const Profile: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={formData.preferences.enableCardCounting}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      preferences: { ...formData.preferences, enableCardCounting: e.target.checked }
-                    })}
+                    onChange={(e) => handlePreferenceChange('enableCardCounting', e.target.checked)}
                     className="w-5 h-5 text-green-600"
                   />
                 </div>
@@ -153,10 +229,7 @@ export const Profile: React.FC = () => {
                   <input
                     type="checkbox"
                     checked={formData.preferences.autoAdvance}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      preferences: { ...formData.preferences, autoAdvance: e.target.checked }
-                    })}
+                    onChange={(e) => handlePreferenceChange('autoAdvance', e.target.checked)}
                     className="w-5 h-5 text-green-600"
                   />
                 </div>
@@ -165,10 +238,7 @@ export const Profile: React.FC = () => {
                   <label className={`block font-medium mb-2 ${themeClasses.text}`}>Difficulty Level</label>
                   <select
                     value={formData.preferences.difficulty}
-                    onChange={(e) => setFormData({
-                      ...formData,
-                      preferences: { ...formData.preferences, difficulty: e.target.value as any }
-                    })}
+                    onChange={(e) => handlePreferenceChange('difficulty', e.target.value)}
                     className={`w-full ${themeClasses.cardBg} border ${themeClasses.border} ${themeClasses.text} rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-500/60`}
                   >
                     <option value="beginner">Beginner</option>
